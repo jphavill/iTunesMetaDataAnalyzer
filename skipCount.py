@@ -1,12 +1,13 @@
 import pandas as pd
 import plistlib as pl
+from guiExplorer import get_xml_file
 
 with open('drop.txt', 'r') as drop_file:
     drop_lines = drop_file.readlines()
     drop_lines = [drop.split('  ')[0].strip('\n') for drop in drop_lines]
 
 
-with open('Library.xml', 'rb') as file:
+with open(get_xml_file(), 'rb') as file:
     lib = pl.load(file)
 
 tracks = lib['Tracks']
