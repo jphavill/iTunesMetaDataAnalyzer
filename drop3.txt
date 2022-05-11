@@ -1,0 +1,50 @@
+Kind                                            Apple Music AAC audio file
+Size                                                               8466532
+Total Time                                                          222560
+Disc Number                                                              1
+Disc Count                                                               1
+Track Number                                                             3
+Track Count                                                             11
+Year                                                                  2011
+Date Modified                                          2019-09-21 00:43:03
+Bit Rate                                                               256
+Sample Rate                                                          44100
+Volume Adjustment                                                      255
+Equalizer                                                             Rock
+Play Date                                                       3733203419
+Play Date UTC                                          2022-04-19 11:56:59
+Skip Date                                                              NaN
+Release Date                                           2011-07-29 07:00:00
+Normalization                                                         8786
+Artwork Count                                                          NaN
+Sort Album                                             Blood of the Saints
+Sort Artist                                                      Powerwolf
+Sort Name                                              We Drink Your Blood
+Persistent ID                                             A80E599D373D90CF
+Track Type                                                            File
+Protected                                                             True
+Apple Music                                                           True
+Location                 file:///Users/jasonhavill/Music/iTunes/iTunes%...
+File Folder Count                                                        5
+Library Folder Count                                                     1
+Start Time                                                             NaN
+Stop Time                                                              NaN
+Loved                                                                  NaN
+Composer                                                               NaN
+Compilation                                                            NaN
+Purchased                                                              NaN
+Matched                                                                NaN
+Comments                                                               NaN
+Explicit                                                               NaN
+Sort Album Artist                                                      NaN
+Sort Composer                                                          NaN
+Disliked                                                               NaN
+Part Of Gapless Album                                                  NaN
+Clean                                                                  NaN
+Playlist Only                                                          NaN
+Album Loved                                                            NaN
+Grouping                                                               NaN
+Work
+Movement Name
+Album Artist  Powerwolf
+Skip Count   2
