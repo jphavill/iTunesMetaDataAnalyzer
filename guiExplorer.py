@@ -9,7 +9,9 @@ def get_xml_file():
                                [sg.Input(),
                                sg.FileBrowse(file_types=(("Library XML files", "*.xml"),))],
                                [sg.OK(), sg.Cancel()]]).Read()
-    return values["Browse"] if values["Browse"] is None else 'Library.xml'
+    file = values["Browse"] if values["Browse"] != '' else 'Library.xml'
+
+    return file
 
 
 def load_xml_file():
@@ -25,7 +27,6 @@ def create_musicdf(dropfile=False):
             drop_lines = drop_file.readlines()
 
         drop_lines = [drop.split('  ')[0].strip('\n') for drop in drop_lines]
-        for drop in drop_lines:
-            music_df.drop(drop, axis=1, inplace=True)
+        music_df.drop([drop for drop in drop_lines if drop in music_df.columns], axis=1, inplace=True)
 
     return music_df

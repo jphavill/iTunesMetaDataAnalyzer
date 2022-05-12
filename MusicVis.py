@@ -6,7 +6,7 @@ import numpy as np
 from random import shuffle
 
 import pandas as pd
-from guiExplorer import load_xml_file
+from guiExplorer import create_musicdf
 
 from matplotlib.animation import PillowWriter
 '''
@@ -53,14 +53,7 @@ NUM_TO_MONTHS = {
 #   line = f.readline()
 #   music_dict = json.loads(line)
 
-music_df = pd.DataFrame.from_dict(load_xml_file()['Tracks']).transpose()
-
-with open('drop3.txt', 'r') as drop_file:
-  drop_lines = drop_file.readlines()
-  drop_lines = [drop.split('  ')[0].strip('\n') for drop in drop_lines]
-
-for drop in drop_lines:
-  music_df.drop(drop, axis=1, inplace=True)
+music_df = create_musicdf(dropfile='drop3.txt')
 
 
 music_df = music_df[music_df['Date Added'].isnull() == False]
@@ -71,9 +64,13 @@ music_df['sort_date'] = music_df['year'].astype(str) + music_df['month'].astype(
 music_df.sort_values('sort_date')
 print(music_df.head())
 
+# all unique dates in increments of 1 month
 unique_dates = music_df['sort_date'].unique()
 unique_dates.sort()
 print(unique_dates)
+
+START_DATE = unique_dates[0]
+END_DATE = unique_dates[-1]
 '''
 def split_duration(duration):
   minutes, seconds = map(int, duration.split(':'))
@@ -243,18 +240,24 @@ for year in sorted(date_songs.keys()):
     for artist, count in temp_artist_count.items():
       if count / temp_total > MIN_PCT/100:
         artists_used.add(artist)
-
-artists_used = list(artists_used) + ['Other < 1%']
-shuffle(artists_used)
-cmap = plt.get_cmap(COLORMAP)
-colors = cmap(np.linspace(0., 1., len(artists_used)))
-artist_colors = {}
-for artist, color in zip(artists_used,colors):
-  artist_colors[artist] = color
-print(artists_used)
-print(temp_total)
-future_month = -1
-future_year = -1
+'''
+# artists_used = list(artists_used) + ['Other < 1%']
+# shuffle(artists_used)
+# cmap = plt.get_cmap(COLORMAP)
+# colors = cmap(np.linspace(0., 1., len(artists_used)))
+# artist_colors = {}
+# for artist, color in zip(artists_used,colors):
+#   artist_colors[artist] = color
+# print(artists_used)
+# print(temp_total)
+# future_month = -1
+# future_year = -1
+# don't need artists list, just get all artists that are in a given range.
+print(music_df.Artist.unique())
+for date in unique_dates:
+  print(date)
+  print(list(music_df[music_df['sort_date'] <= date].Artist.unique()) + ['Other < 1%'])
+  '''
 for year in sorted():
   for month in sorted(date_songs[year].keys()):
     plt_data(ax1, camera, year, month, artist_colors)

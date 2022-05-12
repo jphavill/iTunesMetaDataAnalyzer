@@ -16,9 +16,9 @@ print(f"Number of Songs before Filtering: {len(music_df.index)}")
 skip_play_avg = music_df['skip_play_ratio'].mean()
 print(f"Average skip / play ratio: {skip_play_avg}", )
 
-music_df = music_df[music_df['skip_play_ratio'] > 0.5]
+music_df = music_df[music_df['skip_play_ratio'] > 2*skip_play_avg]
 
 print(f"Number of Songs after Filtering: {len(music_df.index)}\n")
 
-for index, row in music_df.sort_values('skip_play_ratio').iterrows():
-    print(f"{row['skip_play_ratio']} {row['Name']} || {row['Artist']} || {row['Album']}\t {row['Play Count']}\t {row['Skip Count']}")
+for _, r in music_df.sort_values('skip_play_ratio').iterrows():
+    print(f"{r['skip_play_ratio']} {r['Name']} || {r['Artist']} || {r['Album']}\t {r['Play Count']}\t {r['Skip Count']}")
