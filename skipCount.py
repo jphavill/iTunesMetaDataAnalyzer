@@ -1,8 +1,8 @@
 import pandas as pd
 
-from guiExplorer import create_musicdf
+from itunes_reader import create_musicdf
 
-music_df = create_musicdf(dropfile='drop.txt')
+music_df = create_musicdf()
 
 music_df = music_df[music_df['Skip Count'].isnull() == False]
 music_df = music_df[music_df['Play Count'].isnull() == False]

@@ -6,7 +6,7 @@ import numpy as np
 from random import shuffle
 
 import pandas as pd
-from guiExplorer import create_musicdf
+from itunes_reader import create_musicdf
 
 from matplotlib.animation import PillowWriter
 '''
@@ -53,7 +53,7 @@ NUM_TO_MONTHS = {
 #   line = f.readline()
 #   music_dict = json.loads(line)
 
-music_df = create_musicdf(dropfile='drop3.txt')
+music_df = create_musicdf(required_fields=('Date Added', 'Artist', 'Play Count', 'Start Time', 'Stop Time'))
 
 
 music_df = music_df[music_df['Date Added'].isnull() == False]
