@@ -3,4 +3,5 @@ Sort, display, and visualize iTunes meta data on songs. For example, filter on t
 
 Export your itunes data into an xml file by going to:
 > File -> Library -> Export Library
+
 You can then import this data by running the application and selecting this file when prompted. 
