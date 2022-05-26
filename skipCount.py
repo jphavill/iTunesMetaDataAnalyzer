@@ -7,7 +7,7 @@ music_df = create_musicdf()
 music_df = music_df[music_df['Skip Count'].isnull() == False]
 music_df = music_df[music_df['Play Count'].isnull() == False]
 
-def skip_play(row):
+def skip_play(row: pd.Series) -> float:
     return round(row['Skip Count'] / row['Play Count'], 2)
 
 music_df['skip_play_ratio'] = music_df.apply(skip_play, axis=1)
