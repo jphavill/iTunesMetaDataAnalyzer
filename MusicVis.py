@@ -259,8 +259,8 @@ for date in unique_dates[5:31]:
 print('animating')
 animation = camera.animate(interval=1000/30,blit=True)
 # for mp4's code is 'celluloid_subplots.mp4'
-# for debug's code is'celluloid_subplots.gif', writer=PillowWriter(30)
-animation.save('celluloid_subplots.mp4')
+# for debug's code is 'celluloid_subplots.gif', writer=PillowWriter(30)
+animation.save('celluloid_subplots.gif', writer=PillowWriter(30))
 
 # prints the number of seconds it took to animate
 print(time.time() - start_time)
