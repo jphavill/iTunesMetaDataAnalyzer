@@ -189,24 +189,6 @@ def plt_data(ax1, camera, year_month, colors):
         camera.snap()
 
 
-
-
-
-# for year in sorted(date_songs.keys()):
-#   for month in sorted(date_songs[year].keys()):
-#     temp_artist_count = defaultdict(int)
-#     temp_total = 0
-#     for y in range(min(date_songs.keys()), year):
-#       for m in range(min(date_songs[y].keys()), 13):
-#         for song in date_songs[y][m]:
-#           temp_total += count_plays(song, temp_artist_count)
-#     for m in range(min(date_songs[year].keys()), month+1):
-#       for song in date_songs[year][m]:
-#         temp_total += count_plays(song, temp_artist_count)
-#     for artist, count in temp_artist_count.items():
-#       if count / temp_total > MIN_PCT/100:
-#         artists_used.add(artist)
-
 music_df = create_musicdf(required_fields=('Date Added', 'Artist', 'Play Count', 'Start Time', 'Stop Time', 'Total Time'))
 
 
