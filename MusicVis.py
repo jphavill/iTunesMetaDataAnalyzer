@@ -11,11 +11,10 @@ from itunes_reader import create_musicdf
 
 from matplotlib.animation import PillowWriter
 
-INTERP_FRAMES_PER_MONTH = 3
+INTERP_FRAMES_PER_MONTH = 1
 MIN_PCT = 1
 COLORMAP = 'tab20c'
 FONTSIZE = 13
-future_month = -1
 
 
 NUM_TO_MONTHS = {
@@ -30,7 +29,7 @@ NUM_TO_MONTHS = {
   9: 'Sep',
   10: 'Oct',
   11: 'Nov',
-  12: 'Dec',
+  0: 'Dec',
 }
 
 
@@ -41,32 +40,15 @@ def song_duration_start_stop(row: pd.Series) -> int:
     else:
       return row['Total Time'] * row['Play Count']
 
-'''
-I think don't do iteratively by row right away, first do group by to group of year and artist sums which should give every artists sum per year'''
 
-def create_date_plays_table(start_date: str, end_date: str) -> pd.DataFrame:
-  # go back and only do it for the year range
-  table = pd.DataFrame(index=music_df['sort_date'].unique(), columns=list(music_df['Artist'].unique()) + ['Duration_Total'])
-  # table[start_date] =
-  # for ym in table.index[1:]:
-  #   table[ym] =
-  # want the function to vectorized, all it does is go through every song entry that matches the year_month and
-  # adds it to corresponding artist column in the current year_month row
-  # can vectorize making sums of duration total after the fact by simply summing each row
-  # populate table with 0s to start? so then i can sum even tho duration total would have been nan
-
-  # use group by, group by year_month and artist
-  # now i need to extract the sorted bits into their own rows and columns.
+def create_date_plays_table() -> pd.DataFrame:
   monthly_sums_df = music_df.groupby(['sort_date', 'Artist'])['duration'].sum().reset_index()
-  # monthly_sums_df = monthly_sums_df.pivot(index='sort_date', columns='')
   table = pd.pivot_table(monthly_sums_df, values='duration', index=['sort_date'],
                          columns=['Artist'], fill_value=0)
   # add sum of each row as a column so percentages can be easily calculated
   table['total_duration'] = table.sum(axis=1)
   # running summation of the songs per month block
   table = table.cumsum()
-  # WE DID IT LETS GOOOOOOOOOOOOOOOO!!!!!!!!!!!!
-  # table = table.set_index('sort_date', 'total_duration')
   tablepct = table.div(table.total_duration, axis=0)
   tablepct['total_duration'] = table.total_duration
   return tablepct
@@ -110,8 +92,24 @@ def create_data_vector(s: pd.Series) -> tuple:
   return chart_sizes, chart_labels, chart_explosion
 
 
+def add_interp_rows(df: pd.DataFrame):
+  n = year_month_diff(df.index[0], df.index[-1]) * INTERP_FRAMES_PER_MONTH
+  interp_index = [year_month_add(df.index[0], i//INTERP_FRAMES_PER_MONTH) for i in range(n+1)]
+  interp_df = pd.DataFrame(np.nan, index=interp_index, columns=df.columns)
+  interp_df = interp_df.fillna(df)
+  return interp_df.interpolate()
+
+
+
 def interp(x1, x2, interp_frames, i):
   return x1 + (x2-x1)/interp_frames * i
+
+
+def year_month_add(ym: str, add_months: int) -> str:
+  total_months = int(ym[:4]) * 12 + int(ym[4:]) + add_months
+  year = total_months // 12
+  months = total_months % 12
+  return str(year) + str(months).zfill(2)
 
 
 '''returns the number of months between year_month dates'''
@@ -178,34 +176,27 @@ colors = cmap(np.linspace(0., 1., len(artists_used)))
 artist_colors = {}
 for artist, color in zip(artists_used,colors):
   artist_colors[artist] = color
-future_month = -1
-future_year = -1
 # don't need artists list, just get all artists that are in a given range.
 
 fig1, ax1 = plt.subplots(figsize=(12, 12), dpi=130)
 camera = Camera(fig1)
-artists_used = set()
 
-# print(music_df.Artist.unique())
-artist_df = create_date_plays_table(START_DATE, END_DATE)
+artist_df = create_date_plays_table()
+
+artist_df = add_interp_rows(artist_df)
 
 for index, row in artist_df.iterrows():
     plt_data_vector(row, artist_colors)
 
-# print(artist_df.to_string())
-# # probably have to deal with the fact that unique won't have every month year combo
-# for date in unique_dates[5:31]:
-#   plt_data(ax1, camera, date, artist_colors)
-#
+
 print(time.time() - start_time)
 print('animating')
 ani_start_time = time.time()
 animation = camera.animate(interval=1000/30,blit=True)
 # for mp4's code is 'celluloid_subplots.mp4'
-# animation.save('celluloid_subplots.mp4')
+animation.save('celluloid_subplots.mp4')
 # for debug's code is 'celluloid_subplots.gif', writer=PillowWriter(30)
-animation.save('celluloid_subplots.gif', writer=PillowWriter(30))
+# animation.save('celluloid_subplots.gif', writer=PillowWriter(30))
 
 # prints the number of seconds it took to animate
 print(time.time() - start_time)
-#interp by using enumerate instead of just iteration, get difference between this month and next and gradually adjust'''
