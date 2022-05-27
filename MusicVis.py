@@ -10,7 +10,6 @@ from itunes_reader import create_musicdf
 
 from matplotlib.animation import PillowWriter
 
-start_time = time.time()
 INTERP_FRAMES = 15
 MIN_PCT = 1
 COLORMAP = 'tab20c'
@@ -57,8 +56,31 @@ def artist_duration(artist: str) -> int:
   return music_df[music_df['Artist'] == artist]['duration'].sum()
 
 
+'''
+I think don't do iteratively by row right away, first do group by to group of year and artist sums which should give every artists sum per year'''
+
+def create_date_plays_table(start_date: str, end_date: str) -> pd.DataFrame:
+  # go back and only do it for the year range
+  table = pd.DataFrame(index=music_df['sort_date'].unique(), columns=list(music_df['Artist'].unique()) + ['Duration_Total'])
+  # table[start_date] =
+  # for ym in table.index[1:]:
+  #   table[ym] =
+  # want the function to vectorized, all it does is go through every song entry that matches the year_month and
+  # adds it to corresponding artist column in the current year_month row
+  # can vectorize making sums of duration total after the fact by simply summing each row
+  # populate table with 0s to start? so then i can sum even tho duration total would have been nan
+
+  # use group by, group by year_month and artist
+  # now i need to extract the sorted bits into their own rows and columns.
+  monthly_sums_df = music_df.groupby(['sort_date', 'Artist'])['duration'].sum().reset_index()
+  # monthly_sums_df = monthly_sums_df.pivot(index='sort_date', columns='')
+  table = pd.pivot_table(monthly_sums_df, values='duration', index=['sort_date'],
+                         columns=['Artist'], fill_value=0)
+
+  # WE DID IT LETS GOOOOOOOOOOOOOOOO!!!!!!!!!!!!
+  return table
+
 def format_duration(duration):
-  duration = duration // 1000
   days = duration // 86400
   hours = (duration - 86400 * days) // 3600
   minutes = (duration - 86400 * days - 3600 * hours) // 60
@@ -190,7 +212,7 @@ def plt_data(ax1, camera, year_month, colors):
 
 
 music_df = create_musicdf(required_fields=('Date Added', 'Artist', 'Play Count', 'Start Time', 'Stop Time', 'Total Time'))
-
+start_time = time.time()
 
 music_df = music_df[music_df['Date Added'].notnull()]
 
@@ -203,8 +225,8 @@ music_df.sort_values('sort_date')
 # all unique dates in increments of 1 month
 unique_dates = music_df['sort_date'].unique()
 unique_dates.sort()
-START_DATE = unique_dates[5]
-END_DATE = unique_dates[30]
+START_DATE = unique_dates[0]
+END_DATE = unique_dates[5]
 
 # filter music data frame to only be the selected time span
 music_df = music_df.loc[(START_DATE <= music_df['sort_date']) & (music_df['sort_date'] <= END_DATE)]
@@ -217,6 +239,7 @@ else:
   music_df['duration'] = music_df.apply(lambda x: x['Total Time'], axis=1)
 # now that duration is computed total time is redundant
 music_df.drop('Total Time', axis=1)
+music_df['duration'] = music_df['duration'].floordiv(1000)
 
 artists_used = list(music_df['Artist'].unique()) + ['Other < 1%']
 shuffle(artists_used)
@@ -233,19 +256,21 @@ fig1, ax1 = plt.subplots(figsize=(12, 12), dpi=130)
 camera = Camera(fig1)
 artists_used = set()
 
-print(music_df.Artist.unique())
-# probably have to deal with the fact that unique won't have every month year combo
-for date in unique_dates[5:31]:
-  plt_data(ax1, camera, date, artist_colors)
+# print(music_df.Artist.unique())
+print(create_date_plays_table(START_DATE, END_DATE).to_string())
+# # probably have to deal with the fact that unique won't have every month year combo
+# for date in unique_dates[5:31]:
+#   plt_data(ax1, camera, date, artist_colors)
+#
+# print(time.time() - start_time)
+# print('animating')
+# animation = camera.animate(interval=1000/30,blit=True)
+# # for mp4's code is 'celluloid_subplots.mp4'
+# # for debug's code is 'celluloid_subplots.gif', writer=PillowWriter(30)
+# animation.save('celluloid_subplots.gif', writer=PillowWriter(30))
+#
+# # prints the number of seconds it took to animate
 
-print('animating')
-animation = camera.animate(interval=1000/30,blit=True)
-# for mp4's code is 'celluloid_subplots.mp4'
-# for debug's code is 'celluloid_subplots.gif', writer=PillowWriter(30)
-animation.save('celluloid_subplots.gif', writer=PillowWriter(30))
-
-# prints the number of seconds it took to animate
-print(time.time() - start_time)
 
 
 #interp by using enumerate instead of just iteration, get difference between this month and next and gradually adjust'''
