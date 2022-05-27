@@ -76,7 +76,10 @@ def create_date_plays_table(start_date: str, end_date: str) -> pd.DataFrame:
   # monthly_sums_df = monthly_sums_df.pivot(index='sort_date', columns='')
   table = pd.pivot_table(monthly_sums_df, values='duration', index=['sort_date'],
                          columns=['Artist'], fill_value=0)
-
+  # add sum of each row as a column so percentages can be easily calculated
+  table['total_duration'] = table.sum(axis=1)
+  # running summation of the songs per month block
+  table = table.cumsum()
   # WE DID IT LETS GOOOOOOOOOOOOOOOO!!!!!!!!!!!!
   return table
 
