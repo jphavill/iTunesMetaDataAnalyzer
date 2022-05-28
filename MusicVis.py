@@ -5,6 +5,7 @@ import time
 import numpy as np
 from random import shuffle
 import bisect
+from math import ceil
 
 import pandas as pd
 from itunes_reader import create_musicdf
@@ -16,6 +17,7 @@ MIN_PCT = 1
 COLORMAP = 'tab20c'
 FONTSIZE = 13
 
+TIME_ESTIMATE = 11 / 1.6
 
 NUM_TO_MONTHS = {
   1: 'Jan',
@@ -154,7 +156,7 @@ music_df.sort_values('sort_date')
 unique_dates = music_df['sort_date'].unique()
 unique_dates.sort()
 START_DATE = unique_dates[0]
-END_DATE = unique_dates[-1]
+END_DATE = unique_dates[10]
 
 # filter music data frame to only be the selected time span
 music_df = music_df.loc[(START_DATE <= music_df['sort_date']) & (music_df['sort_date'] <= END_DATE)]
@@ -189,8 +191,10 @@ for index, row in artist_df.iterrows():
     plt_data_vector(row, artist_colors)
 
 
-print(time.time() - start_time)
-print('animating')
+pre_animation_time = time.time() - start_time
+print(f'Pre-Animation processing completed in: {round(pre_animation_time, 2)} seconds')
+print(f'Frames to animate: {artist_df.shape[0] + 14}')
+print(f'Estimated time to animate: {ceil(pre_animation_time * TIME_ESTIMATE)} seconds')
 ani_start_time = time.time()
 animation = camera.animate(interval=1000/30,blit=True)
 # for mp4's code is 'celluloid_subplots.mp4'
@@ -199,4 +203,5 @@ animation.save('celluloid_subplots.mp4')
 # animation.save('celluloid_subplots.gif', writer=PillowWriter(30))
 
 # prints the number of seconds it took to animate
-print(time.time() - start_time)
+animation_time = time.time() - start_time
+print(f'Animation completed in: {round(animation_time)} seconds')
